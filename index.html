@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>for you 💕</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --baby-blue: #AEE0FA;
+    --baby-blue-soft: #E4F5FD;
+    --baby-pink: #FFCBE1;
+    --baby-pink-soft: #FFEDF5;
+    --white: #FFFFFF;
+    --text: #5c4b66;
+    --text-soft: #8b7a97;
+    --shadow: rgba(150, 120, 160, 0.25);
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin:0;
+    padding:0;
+    min-height:100%;
+  }
+
+  body{
+    font-family: 'Quicksand', sans-serif;
+    color: var(--text);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow-x:hidden;
+    background: linear-gradient(135deg, var(--baby-blue) 0%, var(--white) 45%, var(--baby-pink) 100%);
+    background-size: 300% 300%;
+    animation: driftBg 14s ease-in-out infinite;
+    padding: 24px;
+    position: relative;
+  }
+
+  @keyframes driftBg{
+    0%{ background-position: 0% 50%; }
+    50%{ background-position: 100% 50%; }
+    100%{ background-position: 0% 50%; }
+  }
+
+  /* floating hearts */
+  .hearts{
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+  }
+  .heart{
+    position: absolute;
+    bottom: -10%;
+    font-size: 22px;
+    opacity: 0.55;
+    animation-name: floatUp;
+    animation-timing-function: ease-in;
+    animation-iteration-count: infinite;
+    user-select: none;
+  }
+  @keyframes floatUp{
+    0%{ transform: translateY(0) rotate(0deg); opacity: 0; }
+    10%{ opacity: 0.6; }
+    100%{ transform: translateY(-115vh) rotate(25deg); opacity: 0; }
+  }
+
+  .deco{
+    position: absolute;
+    width: 118px;
+    padding: 7px 7px 22px;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 12px 28px rgba(150,120,160,0.4);
+    z-index: -1;
+    pointer-events: none;
+  }
+  .deco img{
+    display: block;
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 2px;
+  }
+  @media (max-width: 480px){
+    .deco{ width: 90px; }
+    .deco img{ height: 98px; }
+  }
+
+  .card{
+    position: relative;
+    z-index: 1;
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(6px);
+    border-radius: 32px;
+    padding: 48px 36px;
+    max-width: 460px;
+    width: 100%;
+    box-shadow: 0 20px 50px var(--shadow);
+    text-align: center;
+    border: 2px solid rgba(255,255,255,0.9);
+  }
+
+  .screen{
+    display: none;
+    animation: fadeIn 0.5s ease;
+  }
+  .screen.active{ display: block; }
+
+  @keyframes fadeIn{
+    from{ opacity: 0; transform: translateY(12px); }
+    to{ opacity: 1; transform: translateY(0); }
+  }
+
+  .question{
+    font-family: 'Dancing Script', cursive;
+    font-weight: 700;
+    font-size: clamp(38px, 9vw, 56px);
+    line-height: 1.2;
+    margin: 0 0 34px;
+    color: var(--text);
+  }
+
+  .choices{
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+  }
+
+  button.choice{
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    border: none;
+    border-radius: 999px;
+    padding: 16px 28px;
+    width: 100%;
+    max-width: 320px;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    transform-origin: center;
+    transition: transform 0.4s cubic-bezier(.34,1.56,.64,1), box-shadow 0.25s ease, opacity 0.35s ease;
+    box-shadow: 0 8px 20px var(--shadow);
+    color: var(--text);
+  }
+  button.choice:hover{ transform: translateY(-2px) scale(1.03); }
+  button.choice:active{ transform: translateY(0) scale(0.98); }
+
+  .choice.blue{ background: linear-gradient(135deg, var(--baby-blue), var(--baby-blue-soft)); }
+  .choice.pink{ background: linear-gradient(135deg, var(--baby-pink), var(--baby-pink-soft)); }
+  .choice.white{ background: var(--white); border: 2px solid var(--baby-pink); }
+
+  button.choice[data-role="right"]{
+    transform-origin: center bottom;
+  }
+
+  .choice.locked{
+    pointer-events: none;
+    opacity: 0.45;
+    filter: saturate(0.7);
+  }
+
+  .hint{
+    margin-top: 18px;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--text-soft);
+    min-height: 18px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .hint.show{ opacity: 1; }
+
+  /* the fancy seven */
+  .fancy-seven{
+    background: linear-gradient(135deg, var(--baby-blue-soft), var(--white), var(--baby-pink-soft));
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.9), 0 10px 26px rgba(255, 170, 210, 0.55);
+    animation: glowPulse 2.2s ease-in-out infinite;
+    padding: 20px 24px;
+  }
+  .fancy-seven .fancy-text{
+    background: linear-gradient(90deg, #7fb8e8, #d98bd9, #ff9fc4, #7fb8e8);
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: shimmer 3s linear infinite;
+    font-weight: 700;
+  }
+  @keyframes shimmer{
+    to{ background-position: 300% center; }
+  }
+  .plain-emoji{
+    -webkit-text-fill-color: initial;
+    color: initial;
+  }
+  @keyframes glowPulse{
+    0%, 100%{ box-shadow: 0 0 0 2px rgba(255,255,255,0.9), 0 10px 26px rgba(255, 170, 210, 0.45); }
+    50%{ box-shadow: 0 0 0 2px rgba(255,255,255,0.9), 0 14px 34px rgba(255, 170, 210, 0.8); }
+  }
+
+  /* final screen */
+  .finale{
+    text-align:center;
+  }
+  .finale .big{
+    font-family: 'Dancing Script', cursive;
+    font-weight: 700;
+    font-size: clamp(34px, 8vw, 50px);
+    margin-bottom: 10px;
+  }
+  .finale .big .gradient-text{
+    background: linear-gradient(90deg, #7fb8e8, #d98bd9, #ff9fc4);
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 3s linear infinite;
+  }
+  .finale p{
+    font-size: 16px;
+    color: var(--text-soft);
+  }
+  .pulse-heart{
+    font-size: 54px;
+    display:inline-block;
+    animation: pulseHeart 1.1s ease-in-out infinite;
+    margin-top: 10px;
+  }
+  @keyframes pulseHeart{
+    0%, 100%{ transform: scale(1); }
+    50%{ transform: scale(1.2); }
+  }
+
+  .letter{
+    text-align: left;
+    margin-top: 34px;
+    padding-top: 28px;
+    border-top: 2px dashed var(--baby-pink);
+  }
+  .letter p{
+    font-family: 'Quicksand', sans-serif;
+    font-size: 15.5px;
+    line-height: 1.75;
+    color: var(--text);
+    margin: 0 0 16px;
+  }
+  .letter p.letter-greeting{
+    font-family: 'Dancing Script', cursive;
+    font-size: 26px;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+  .letter p.letter-signoff{
+    font-family: 'Dancing Script', cursive;
+    font-size: 24px;
+    text-align: right;
+    margin: 20px 0 0;
+    background: linear-gradient(90deg, #7fb8e8, #d98bd9, #ff9fc4);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .confetti-piece{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    font-size: 20px;
+    pointer-events: none;
+    z-index: 5;
+    animation: confettiBurst 1.6s ease-out forwards;
+  }
+  @keyframes confettiBurst{
+    to{
+      transform: translate(var(--tx), var(--ty)) rotate(var(--rot));
+      opacity: 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="hearts" id="hearts"></div>
+
+<div class="card">
+
+  <!-- Screen 1 -->
+  <div class="screen active" id="screen-1">
+    <div class="deco" style="top:-24px; left:-26px; transform:rotate(-9deg);"><img src="images/couple-01-stepup.png" alt=""></div>
+    <div class="deco" style="bottom:-24px; right:-26px; transform:rotate(7deg);"><img src="images/couple-02-fastfurious.webp" alt=""></div>
+    <p class="question">how are you doing? 💙</p>
+    <div class="choices">
+      <button class="choice blue" data-role="wrong" data-group="1">good</button>
+      <button class="choice pink" data-role="wrong" data-group="1">bad</button>
+      <button class="choice white" data-role="right" data-next="screen-2">better... with you 💕</button>
+    </div>
+    <p class="hint" id="hint-1"></p>
+  </div>
+
+  <!-- Screen 2 -->
+  <div class="screen" id="screen-2">
+    <div class="deco" style="top:-24px; left:-26px; transform:rotate(-6deg);"><img src="images/couple-03-frozen.webp" alt=""></div>
+    <div class="deco" style="bottom:-24px; right:-26px; transform:rotate(9deg);"><img src="images/couple-04-aladdin.webp" alt=""></div>
+    <p class="question">quick quiz —<br>what comes after 6?</p>
+    <div class="choices">
+      <button class="choice blue" data-role="wrong" data-group="2">7</button>
+      <button class="choice pink" data-role="wrong" data-group="2">73</button>
+      <button class="choice white fancy-seven" data-role="right" data-next="screen-3">
+        <span class="fancy-text">7 (the almighty, gorgeous, handsome, feelings-having, coolest seven to ever exist) (me)</span>
+        <span class="plain-emoji">😎✨</span>
+      </button>
+    </div>
+    <p class="hint" id="hint-2"></p>
+  </div>
+
+  <!-- Screen 3 -->
+  <div class="screen" id="screen-3">
+    <div class="deco" style="top:-24px; left:-26px; transform:rotate(-10deg);"><img src="images/couple-05-beautybeast.webp" alt=""></div>
+    <div class="deco" style="bottom:-24px; right:-26px; transform:rotate(6deg);"><img src="images/couple-06-ladytramp.webp" alt=""></div>
+    <p class="question">do you want to be<br>the 6 to my 7? 👀</p>
+    <div class="choices">
+      <button class="choice blue" data-role="wrong" data-group="3">no</button>
+      <button class="choice pink" data-role="right" data-next="screen-4">yes</button>
+    </div>
+    <p class="hint" id="hint-3"></p>
+  </div>
+
+  <!-- Screen 4 -->
+  <div class="screen" id="screen-4">
+    <div class="deco" style="top:-24px; left:-26px; transform:rotate(-7deg);"><img src="images/couple-07-spiderman.webp" alt=""></div>
+    <div class="deco" style="bottom:-24px; right:-26px; transform:rotate(8deg);"><img src="images/couple-08-alvin.webp" alt=""></div>
+    <p class="question">will you be my<br>official girlfriend? 😉</p>
+    <div class="choices">
+      <button class="choice blue" data-role="wrong" data-group="4">no</button>
+      <button class="choice pink" data-role="right" data-next="screen-5" id="final-yes">yes</button>
+    </div>
+    <p class="hint" id="hint-4"></p>
+  </div>
+
+  <!-- Screen 5: finale -->
+  <div class="screen finale" id="screen-5">
+    <div class="deco" style="top:-24px; left:-26px; transform:rotate(-8deg);"><img src="images/couple-09-table.png" alt=""></div>
+    <div class="big"><span class="gradient-text">she said YES!</span> <span class="plain-emoji">🎉</span></div>
+    <div class="pulse-heart">💗</div>
+    <p>best decision you've ever made 🥹💕</p>
+
+    <div class="letter">
+      <p class="letter-greeting">Dear Elsa,</p>
+      <p>We share a really special love story and I really hope that it doesn’t end so fast. I feel like we have a really special connection and I never ever had something like this with someone before. We can talk about everything without it being weird or sum like that. I really appreciate that. This may or not be the hardest but at the same time the best year of our life. I think that we can accomplish everything we want to. I want you to know that I will always help you with everything. You are never alone. I want to stand by your side and achieve new things together. I will be there for the ups and downs in life! I also appreciate that we are mature about everything, not everyone can do that! I know that life sometimes may not be so easy and especially this year is gonna challenge us a lot, but if we make it - we are unstoppable. I trust you and I really think that you are one of the kindest persons that I have ever met. Everything is new for us now but we can do it together. I feel like when I asked you on the call it wasn’t really a good way so I did it again. If we ever have a problem we have to address it and we will face it together, as a Team! I never ever had feelings like this for someone and I really like what we have ;)</p>
+      <p>I don’t want to jinx anything but since I am your Boyfriend I feel like I can say that. I really like you for who you are. You make me want to be a better person. I will give my best at everything to make you happy, I hope you know that.</p>
+      <p class="letter-signoff">Jag älskar dig, älskling.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // floating hearts background
+  const heartsContainer = document.getElementById('hearts');
+  const heartEmojis = ['💙','💗','🩷','💕','💙'];
+  for(let i = 0; i < 18; i++){
+    const h = document.createElement('span');
+    h.className = 'heart';
+    h.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+    h.style.left = Math.random() * 100 + 'vw';
+    h.style.fontSize = (14 + Math.random() * 18) + 'px';
+    const duration = 9 + Math.random() * 8;
+    h.style.animationDuration = duration + 's';
+    h.style.animationDelay = (Math.random() * duration) + 's';
+    heartsContainer.appendChild(h);
+  }
+
+  function showScreen(id){
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  const GROW_STEPS = [1, 1.2, 1.4, 1.6, 1.8];
+  const HINTS = [
+    '',
+    'hmm... 👀',
+    "the other one is looking pretty convincing right now 😏",
+    "kind of hard to ignore at this point",
+    "yeah, that one's not really an option anymore 😌"
+  ];
+
+  const groupLevels = {};
+
+  document.querySelectorAll('button.choice').forEach(btn => {
+    if(btn.dataset.role === 'wrong'){
+      const group = btn.dataset.group;
+      if(!(group in groupLevels)) groupLevels[group] = 0;
+
+      btn.addEventListener('click', () => {
+        groupLevels[group] = Math.min(groupLevels[group] + 1, GROW_STEPS.length - 1);
+        const level = groupLevels[group];
+
+        const screen = btn.closest('.screen');
+        const rightBtn = screen.querySelector('button.choice[data-role="right"]');
+        if(rightBtn){
+          rightBtn.style.transform = `scale(${GROW_STEPS[level]})`;
+          rightBtn.style.zIndex = 5;
+        }
+
+        if(level >= GROW_STEPS.length - 1){
+          document.querySelectorAll(`button.choice[data-group="${group}"]`).forEach(wrongBtn => {
+            wrongBtn.classList.add('locked');
+          });
+        }
+
+        const hint = screen.querySelector('.hint');
+        if(hint){
+          hint.textContent = HINTS[level];
+          hint.classList.add('show');
+        }
+      });
+    }
+
+    if(btn.dataset.role === 'right'){
+      btn.addEventListener('click', () => {
+        showScreen(btn.dataset.next);
+        if(btn.id === 'final-yes'){
+          launchConfetti();
+        }
+      });
+    }
+  });
+
+  function launchConfetti(){
+    const pieces = ['💗','💙','🩷','✨','💕','💖'];
+    for(let i = 0; i < 40; i++){
+      const p = document.createElement('span');
+      p.className = 'confetti-piece';
+      p.textContent = pieces[Math.floor(Math.random() * pieces.length)];
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 120 + Math.random() * 260;
+      p.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+      p.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+      p.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+      p.style.animationDelay = (Math.random() * 0.3) + 's';
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 2200);
+    }
+  }
+</script>
+
+</body>
+</html>
