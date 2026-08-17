@@ -289,16 +289,46 @@
       opacity: 0;
     }
   }
+
+  #mute-toggle{
+    display: none;
+    position: fixed;
+    top: 18px;
+    right: 18px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.85);
+    box-shadow: 0 6px 16px var(--shadow);
+    font-size: 18px;
+    cursor: pointer;
+    z-index: 10;
+    align-items: center;
+    justify-content: center;
+  }
 </style>
 </head>
 <body>
 
 <div class="hearts" id="hearts"></div>
 
+<audio id="bgm" preload="none"></audio>
+<button id="mute-toggle" aria-label="mute music">🔊</button>
+
 <div class="card">
 
+  <!-- Screen 0: song choice -->
+  <div class="screen active" id="screen-0">
+    <p class="question">choose what<br>you want! 🎶</p>
+    <div class="choices">
+      <button class="choice blue" data-song="audio/song-h.mp3" data-next="screen-1">this one 🎧</button>
+      <button class="choice pink" data-song="audio/song-w.mp3" data-next="screen-1">that one 🎧</button>
+    </div>
+  </div>
+
   <!-- Screen 1 -->
-  <div class="screen active" id="screen-1">
+  <div class="screen" id="screen-1">
     <div class="deco" style="top:-24px; left:-26px; transform:rotate(-9deg);"><img src="images/couple-01-stepup.png" alt=""></div>
     <div class="deco" style="bottom:-24px; right:-26px; transform:rotate(7deg);"><img src="images/couple-02-fastfurious.webp" alt=""></div>
     <div class="deco" style="bottom:-24px; left:-26px; transform:rotate(9deg);"><img src="images/couple-10-facetime.png" alt=""></div>
@@ -393,6 +423,22 @@
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
   }
+
+  // song choice screen
+  const bgm = document.getElementById('bgm');
+  const muteToggle = document.getElementById('mute-toggle');
+  document.querySelectorAll('button[data-song]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      bgm.src = btn.dataset.song;
+      bgm.play();
+      muteToggle.style.display = 'flex';
+      showScreen(btn.dataset.next);
+    });
+  });
+  muteToggle.addEventListener('click', () => {
+    bgm.muted = !bgm.muted;
+    muteToggle.textContent = bgm.muted ? '🔇' : '🔊';
+  });
 
   const GROW_STEPS = [1, 1.2, 1.4, 1.6, 1.8];
   const HINTS = [
